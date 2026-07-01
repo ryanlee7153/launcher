@@ -9,60 +9,26 @@ const subMenu = document.getElementById("subMenu");
 let hideTimer = null;
 
 /* =========================
-   OPEN / CLOSE MAIN MENU
+   FORCE HIDE SUBMENU (REAL FIX)
 ========================= */
 
-function closeAll() {
-    menu.classList.remove("open");
-    subMenu.classList.remove("open");
+function hideSubmenu() {
+    subMenu.innerHTML = "";
+    subMenu.style.display = "none";
 }
-
-btn.addEventListener("click", (e) => {
-    e.stopPropagation();
-
-    const isOpen = menu.classList.contains("open");
-
-    if (isOpen) {
-        closeAll();
-    } else {
-        menu.classList.add("open");
-    }
-});
-
-document.addEventListener("click", closeAll);
-
-/* =========================
-   AUTO HIDE (SAFE RESET)
-========================= */
-
-function startHideTimer() {
-    clearTimeout(hideTimer);
-
-    hideTimer = setTimeout(() => {
-        closeAll();
-    }, 1000);
-}
-
-function cancelHideTimer() {
-    clearTimeout(hideTimer);
-}
-
-/* =========================
-   SHOW SUBMENU
-========================= */
 
 function showSubmenu(items, x, y) {
 
     subMenu.innerHTML = "";
 
+    subMenu.style.display = "flex";
+    subMenu.style.flexDirection = "column";
     subMenu.style.position = "fixed";
     subMenu.style.left = (x + 10) + "px";
     subMenu.style.top = y + "px";
     subMenu.style.background = "#1e1e1e";
     subMenu.style.border = "1px solid #333";
     subMenu.style.padding = "6px";
-    subMenu.style.display = "flex";
-    subMenu.style.flexDirection = "column";
     subMenu.style.minWidth = "200px";
     subMenu.style.zIndex = "9999";
 
@@ -93,8 +59,44 @@ function showSubmenu(items, x, y) {
 
         subMenu.appendChild(row);
     });
+}
 
-    subMenu.classList.add("open");
+/* =========================
+   CLOSE EVERYTHING (IMPORTANT)
+========================= */
+
+function closeAll() {
+    menu.classList.remove("open");
+    hideSubmenu(); // <- THIS is the real fix
+}
+
+/* =========================
+   TOGGLE BUTTON
+========================= */
+
+btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+
+    if (menu.classList.contains("open")) {
+        closeAll();
+    } else {
+        menu.classList.add("open");
+    }
+});
+
+document.addEventListener("click", closeAll);
+
+/* =========================
+   AUTO HIDE
+========================= */
+
+function startHideTimer() {
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(closeAll, 1000);
+}
+
+function cancelHideTimer() {
+    clearTimeout(hideTimer);
 }
 
 /* =========================
@@ -126,30 +128,22 @@ async function loadMenu() {
         div.className = "category";
         div.textContent = cat + " ▶";
 
-        div.onmouseenter = (e) => {
+        div.onmouseenter = () => {
 
             cancelHideTimer();
 
             const rect = div.getBoundingClientRect();
-
             showSubmenu(groups[cat], rect.right, rect.top);
         };
 
         menu.appendChild(div);
     });
 
-    /* =========================
-       CRITICAL FIX: FORCE CLEAN STATE
-    ========================= */
-
     menu.onmouseleave = startHideTimer;
     menu.onmouseenter = cancelHideTimer;
 
     subMenu.onmouseenter = cancelHideTimer;
-
-    subMenu.onmouseleave = () => {
-        startHideTimer();
-    };
+    subMenu.onmouseleave = startHideTimer;
 }
 
 loadMenu();
