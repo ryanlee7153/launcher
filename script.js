@@ -8,19 +8,26 @@ const subMenu = document.getElementById("subMenu");
 
 let hideTimer = null;
 
-/* OPEN/CLOSE MENU */
+/* =========================
+   TOGGLE MAIN MENU
+========================= */
+
 btn.addEventListener("click", (e) => {
     e.stopPropagation();
     menu.classList.toggle("open");
     subMenu.classList.remove("open");
 });
 
+/* close on outside click */
 document.addEventListener("click", () => {
     menu.classList.remove("open");
     subMenu.classList.remove("open");
 });
 
-/* AUTO HIDE */
+/* =========================
+   AUTO HIDE
+========================= */
+
 function startHideTimer() {
     clearTimeout(hideTimer);
     hideTimer = setTimeout(() => {
@@ -33,22 +40,44 @@ function cancelHideTimer() {
     clearTimeout(hideTimer);
 }
 
-/* SUBMENU */
-function showSubmenu(category, items, x, y) {
+/* =========================
+   SUBMENU BUILDER (FIXED)
+========================= */
+
+function showSubmenu(items, x, y) {
 
     subMenu.innerHTML = "";
+
+    // FORCE COLUMN LAYOUT HERE (not CSS-dependent)
+    subMenu.style.display = "flex";
+    subMenu.style.flexDirection = "column";
+    subMenu.style.position = "fixed";
+    subMenu.style.left = (x + 10) + "px";
+    subMenu.style.top = y + "px";
+    subMenu.style.minWidth = "200px";
 
     items.forEach(item => {
 
         const pin = item.pin ? String(item.pin).trim() : "";
 
-        const link = document.createElement("div");
-        link.className = "menu-item";
-        link.textContent = item.label;
+        const div = document.createElement("div");
+        div.textContent = item.label;
 
-        link.addEventListener("click", () => {
+        div.style.padding = "8px 10px";
+        div.style.cursor = "pointer";
+        div.style.whiteSpace = "nowrap";
+        div.style.color = "white";
 
-            // DEBUG
+        div.addEventListener("mouseenter", () => {
+            div.style.background = "#2a2a2a";
+        });
+
+        div.addEventListener("mouseleave", () => {
+            div.style.background = "transparent";
+        });
+
+        div.addEventListener("click", () => {
+
             console.log("CLICK:", item.label, "PIN:", pin);
 
             if (pin !== "") {
@@ -64,21 +93,22 @@ function showSubmenu(category, items, x, y) {
             window.open(item.url, "_blank");
         });
 
-        subMenu.appendChild(link);
+        subMenu.appendChild(div);
     });
-
-    subMenu.style.position = "fixed";
-    subMenu.style.left = (x + 10) + "px";
-    subMenu.style.top = y + "px";
 
     subMenu.classList.add("open");
 }
 
-/* LOAD MENU */
+/* =========================
+   LOAD MENU
+========================= */
+
 async function loadMenu() {
 
     const res = await fetch(API_URL);
     const data = await res.json();
+
+    console.log("DATA:", data);
 
     const groups = {};
 
@@ -106,7 +136,7 @@ async function loadMenu() {
 
             const rect = div.getBoundingClientRect();
 
-            showSubmenu(cat, groups[cat], rect.right, rect.top);
+            showSubmenu(groups[cat], rect.right, rect.top);
 
         });
 
