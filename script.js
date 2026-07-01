@@ -3,16 +3,18 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyeK2cjWy5DTMBVY-qKjcPb
 const btn = document.getElementById("launchBtn");
 const menu = document.getElementById("menu");
 
-btn.onclick = () => menu.classList.toggle("open");
+btn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  menu.classList.toggle("open");
+});
 
-window.onclick = e => {
-  if (!document.getElementById("launcher").contains(e.target)) {
-    menu.classList.remove("open");
-  }
-};
+document.addEventListener("click", () => {
+  menu.classList.remove("open");
+});
 
-async function load() {
-  const data = await fetch(API_URL).then(r => r.json());
+async function loadMenu() {
+  const res = await fetch(API_URL);
+  const data = await res.json();
 
   menu.innerHTML = "";
 
@@ -24,12 +26,12 @@ async function load() {
   });
 
   Object.keys(groups).sort().forEach(cat => {
-    const c = document.createElement("div");
-    c.className = "category";
-    c.textContent = cat + " ▶";
+    const catDiv = document.createElement("div");
+    catDiv.className = "category";
+    catDiv.textContent = cat;
 
-    const s = document.createElement("div");
-    s.className = "submenu";
+    const sub = document.createElement("div");
+    sub.className = "submenu";
 
     groups[cat]
       .sort((a, b) => a.label.localeCompare(b.label))
@@ -38,12 +40,12 @@ async function load() {
         a.href = i.url;
         a.target = "_blank";
         a.textContent = i.label;
-        s.appendChild(a);
+        sub.appendChild(a);
       });
 
-    c.appendChild(s);
-    menu.appendChild(c);
+    catDiv.appendChild(sub);
+    menu.appendChild(catDiv);
   });
 }
 
-load();
+loadMenu();
