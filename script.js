@@ -1,10 +1,19 @@
 console.log("SCRIPT LOADED");
 
-const btn = document.getElementById("launchBtn");
+document.addEventListener("DOMContentLoaded", () => {
 
-console.log("BUTTON FOUND:", btn);
+    const btn = document.getElementById("launchBtn");
 
-btn.addEventListener("click", () => {
-    console.log("RT CLICKED");
-    alert("RT works");
+    console.log("BUTTON FOUND:", btn);
+
+    if (!btn) {
+        console.error("launchBtn NOT FOUND - check index.html");
+        return;
+    }
+
+    btn.addEventListener("click", () => {
+        console.log("RT CLICKED");
+        alert("RT works");
+    });
+
 });
