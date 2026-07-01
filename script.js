@@ -1,7 +1,7 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbyeK2cjWy5DTMBVY-qKjcPbEmitrFreFswnw46hu5Je3HW9axUiyuzcDmiiuJGwA0a69A/exec";
 
 const btn = document.getElementById("launchBtn");
-const menu = document.getElementById("menu");
+const menu = document.getElementById("startMenu");
 const subMenu = document.getElementById("subMenu");
 
 let hideTimer = null;
@@ -10,34 +10,34 @@ function openMenu() {
     menu.classList.add("open");
 }
 
-function closeAll() {
+function closeMenu() {
     menu.classList.remove("open");
     subMenu.classList.remove("open");
 }
 
-function startHideTimer() {
+function cancelHide() {
+    clearTimeout(hideTimer);
+}
+
+function startHide() {
     clearTimeout(hideTimer);
 
     hideTimer = setTimeout(() => {
-        closeAll();
+        closeMenu();
     }, 1000);
-}
-
-function cancelHideTimer() {
-    clearTimeout(hideTimer);
 }
 
 btn.addEventListener("click", (e) => {
     e.stopPropagation();
 
     if (menu.classList.contains("open")) {
-        closeAll();
+        closeMenu();
     } else {
         openMenu();
     }
 });
 
-document.addEventListener("click", closeAll);
+document.addEventListener("click", closeMenu);
 
 function showSubmenu(category, items, x, y) {
 
@@ -84,7 +84,7 @@ async function loadMenu() {
 
         div.addEventListener("mouseenter", (e) => {
 
-            cancelHideTimer();
+            cancelHide();
 
             const rect = div.getBoundingClientRect();
 
@@ -100,13 +100,11 @@ async function loadMenu() {
         menu.appendChild(div);
     });
 
-    // IMPORTANT: start hide timer when leaving BOTH areas
-    menu.addEventListener("mouseleave", startHideTimer);
-    subMenu.addEventListener("mouseleave", startHideTimer);
+    menu.addEventListener("mouseleave", startHide);
+    subMenu.addEventListener("mouseleave", startHide);
 
-    // cancel timer when re-entering
-    menu.addEventListener("mouseenter", cancelHideTimer);
-    subMenu.addEventListener("mouseenter", cancelHideTimer);
+    menu.addEventListener("mouseenter", cancelHide);
+    subMenu.addEventListener("mouseenter", cancelHide);
 }
 
 loadMenu();
