@@ -1,3 +1,4 @@
+console.log("JS is running");
 const API_URL='https://script.google.com/macros/s/AKfycbyeK2cjWy5DTMBVY-qKjcPbEmitrFreFswnw46hu5Je3HW9axUiyuzcDmiiuJGwA0a69A/exec';
 async function load() {
   const data = await fetch(API_URL).then(r => r.json());
