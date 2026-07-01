@@ -1,0 +1,11 @@
+body{margin:0;background:#111;color:#fff;font-family:Arial;height:100vh;display:flex;justify-content:center;align-items:center}
+h1{opacity:.35;font-weight:300}
+.launcher{position:fixed;top:20px;left:20px}
+#launchBtn{padding:10px 16px;font-size:20px;cursor:pointer}
+.menu{display:none;margin-top:10px;background:#222;border:1px solid #555;border-radius:8px;min-width:220px;padding:8px}
+.menu.open{display:block}
+.category{position:relative;padding:8px;cursor:pointer}
+.submenu{display:none;position:absolute;left:100%;top:0;background:#2d2d2d;border:1px solid #555;border-radius:8px;min-width:180px}
+.category:hover .submenu{display:block}
+.submenu a{display:block;color:#fff;text-decoration:none;padding:8px}
+.submenu a:hover{background:#444}
