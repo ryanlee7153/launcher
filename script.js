@@ -1,9 +1,13 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbyeK2cjWy5DTMBVY-qKjcPbEmitrFreFswnw46hu5Je3HW9axUiyuzcDmiiuJGwA0a69A/exec";
 
-console.log("JS is running");
+console.log("SCRIPT LOADED");
 
 const btn = document.getElementById("launchBtn");
 const menu = document.getElementById("menu");
+
+if (!btn || !menu) {
+  console.error("Missing HTML elements: launchBtn or menu");
+}
 
 btn.addEventListener("click", (e) => {
   e.stopPropagation();
@@ -16,17 +20,19 @@ document.addEventListener("click", () => {
 
 async function loadMenu() {
   try {
-    console.log("Fetching data...");
     const res = await fetch(API_URL);
     const data = await res.json();
 
-    console.log("DATA:", data);
+    console.log("DATA FROM APPS SCRIPT:", data);
 
     menu.innerHTML = "";
 
     const groups = {};
 
     data.forEach(item => {
+      if (!item.category || !item.label || !item.url) return;
+      if (!item.enabled) return;
+
       if (!groups[item.category]) groups[item.category] = [];
       groups[item.category].push(item);
     });
@@ -34,7 +40,7 @@ async function loadMenu() {
     Object.keys(groups).sort().forEach(cat => {
       const catDiv = document.createElement("div");
       catDiv.className = "category";
-      catDiv.textContent = cat;
+      catDiv.textContent = cat + " ▶";
 
       const sub = document.createElement("div");
       sub.className = "submenu";
@@ -53,8 +59,10 @@ async function loadMenu() {
       menu.appendChild(catDiv);
     });
 
+    console.log("MENU BUILT");
+
   } catch (err) {
-    console.error("ERROR:", err);
+    console.error("ERROR LOADING MENU:", err);
   }
 }
 
