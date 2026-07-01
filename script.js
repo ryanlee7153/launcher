@@ -5,7 +5,6 @@ const menu=document.getElementById('menu');
 btn.onclick=()=>menu.classList.toggle('open');
 window.onclick=e=>{if(!document.getElementById('launcher').contains(e.target))menu.classList.remove('open');}
 async function load(){
- if(API_URL.startsWith('PASTE_')) return;
  const data=await fetch(API_URL).then(r=>r.json());
  const groups={};
  data.forEach(x=>{(groups[x.category]??=[]).push(x);});
