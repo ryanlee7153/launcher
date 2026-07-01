@@ -15,6 +15,8 @@ let hideTimer = null;
 btn.addEventListener("click", (e) => {
     e.stopPropagation();
     menu.classList.toggle("open");
+
+    // ALWAYS reset submenu when toggling main menu
     subMenu.classList.remove("open");
 });
 
@@ -24,11 +26,12 @@ document.addEventListener("click", () => {
 });
 
 /* =========================
-   AUTO HIDE
+   AUTO HIDE SYSTEM
 ========================= */
 
 function startHideTimer() {
     clearTimeout(hideTimer);
+
     hideTimer = setTimeout(() => {
         menu.classList.remove("open");
         subMenu.classList.remove("open");
@@ -40,12 +43,11 @@ function cancelHideTimer() {
 }
 
 /* =========================
-   SHOW SUBMENU (HARD RESET LAYOUT)
+   SUBMENU (CLEAN + SAFE)
 ========================= */
 
 function showSubmenu(items, x, y) {
 
-    // FORCE RESET EVERYTHING
     subMenu.innerHTML = "";
 
     subMenu.style.position = "fixed";
@@ -64,14 +66,12 @@ function showSubmenu(items, x, y) {
         const pin = item.pin ? String(item.pin).trim() : "";
 
         const row = document.createElement("div");
+        row.textContent = item.label;
 
-        // HARD INLINE STYLING (removes ALL CSS dependency issues)
         row.style.padding = "8px 10px";
         row.style.cursor = "pointer";
         row.style.color = "white";
         row.style.whiteSpace = "nowrap";
-
-        row.textContent = item.label;
 
         row.onmouseenter = () => row.style.background = "#2a2a2a";
         row.onmouseleave = () => row.style.background = "transparent";
@@ -121,23 +121,25 @@ async function loadMenu() {
         div.className = "category";
         div.textContent = cat + " ▶";
 
-        div.onmouseenter = (e) => {
-
+        div.onmouseenter = () => {
             cancelHideTimer();
 
             const rect = div.getBoundingClientRect();
-
             showSubmenu(groups[cat], rect.right, rect.top);
         };
 
         menu.appendChild(div);
     });
 
-    menu.onmouseenter = cancelHideTimer;
-    subMenu.onmouseenter = cancelHideTimer;
+    /* =========================
+       FIX: PROPER CLOSE BEHAVIOR
+    ========================= */
 
     menu.onmouseleave = startHideTimer;
     subMenu.onmouseleave = startHideTimer;
+
+    menu.onmouseenter = cancelHideTimer;
+    subMenu.onmouseenter = cancelHideTimer;
 }
 
 loadMenu();
