@@ -6,15 +6,38 @@ const subMenu = document.getElementById("subMenu");
 
 let hideTimer = null;
 
-btn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    menu.classList.toggle("open");
-});
+function openMenu() {
+    menu.classList.add("open");
+}
 
-document.addEventListener("click", () => {
+function closeAll() {
     menu.classList.remove("open");
     subMenu.classList.remove("open");
+}
+
+function startHideTimer() {
+    clearTimeout(hideTimer);
+
+    hideTimer = setTimeout(() => {
+        closeAll();
+    }, 1000);
+}
+
+function cancelHideTimer() {
+    clearTimeout(hideTimer);
+}
+
+btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+
+    if (menu.classList.contains("open")) {
+        closeAll();
+    } else {
+        openMenu();
+    }
 });
+
+document.addEventListener("click", closeAll);
 
 function showSubmenu(category, items, x, y) {
 
@@ -32,17 +55,6 @@ function showSubmenu(category, items, x, y) {
     subMenu.style.top = y + "px";
 
     subMenu.classList.add("open");
-
-    resetHideTimer();
-}
-
-function resetHideTimer() {
-    clearTimeout(hideTimer);
-
-    hideTimer = setTimeout(() => {
-        menu.classList.remove("open");
-        subMenu.classList.remove("open");
-    }, 1000);
 }
 
 async function loadMenu() {
@@ -72,6 +84,8 @@ async function loadMenu() {
 
         div.addEventListener("mouseenter", (e) => {
 
+            cancelHideTimer();
+
             const rect = div.getBoundingClientRect();
 
             showSubmenu(
@@ -86,12 +100,13 @@ async function loadMenu() {
         menu.appendChild(div);
     });
 
-    // keep menu alive while interacting
-    menu.addEventListener("mouseenter", () => clearTimeout(hideTimer));
-    subMenu.addEventListener("mouseenter", () => clearTimeout(hideTimer));
+    // IMPORTANT: start hide timer when leaving BOTH areas
+    menu.addEventListener("mouseleave", startHideTimer);
+    subMenu.addEventListener("mouseleave", startHideTimer);
 
-    menu.addEventListener("mouseleave", resetHideTimer);
-    subMenu.addEventListener("mouseleave", resetHideTimer);
+    // cancel timer when re-entering
+    menu.addEventListener("mouseenter", cancelHideTimer);
+    subMenu.addEventListener("mouseenter", cancelHideTimer);
 }
 
 loadMenu();
