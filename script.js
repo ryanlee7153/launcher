@@ -9,32 +9,37 @@ const subMenu = document.getElementById("subMenu");
 let hideTimer = null;
 
 /* =========================
-   TOGGLE MAIN MENU
+   OPEN / CLOSE MAIN MENU
 ========================= */
+
+function closeAll() {
+    menu.classList.remove("open");
+    subMenu.classList.remove("open");
+}
 
 btn.addEventListener("click", (e) => {
     e.stopPropagation();
-    menu.classList.toggle("open");
 
-    // ALWAYS reset submenu when toggling main menu
-    subMenu.classList.remove("open");
+    const isOpen = menu.classList.contains("open");
+
+    if (isOpen) {
+        closeAll();
+    } else {
+        menu.classList.add("open");
+    }
 });
 
-document.addEventListener("click", () => {
-    menu.classList.remove("open");
-    subMenu.classList.remove("open");
-});
+document.addEventListener("click", closeAll);
 
 /* =========================
-   AUTO HIDE SYSTEM
+   AUTO HIDE (SAFE RESET)
 ========================= */
 
 function startHideTimer() {
     clearTimeout(hideTimer);
 
     hideTimer = setTimeout(() => {
-        menu.classList.remove("open");
-        subMenu.classList.remove("open");
+        closeAll();
     }, 1000);
 }
 
@@ -43,7 +48,7 @@ function cancelHideTimer() {
 }
 
 /* =========================
-   SUBMENU (CLEAN + SAFE)
+   SHOW SUBMENU
 ========================= */
 
 function showSubmenu(items, x, y) {
@@ -121,10 +126,12 @@ async function loadMenu() {
         div.className = "category";
         div.textContent = cat + " ▶";
 
-        div.onmouseenter = () => {
+        div.onmouseenter = (e) => {
+
             cancelHideTimer();
 
             const rect = div.getBoundingClientRect();
+
             showSubmenu(groups[cat], rect.right, rect.top);
         };
 
@@ -132,14 +139,17 @@ async function loadMenu() {
     });
 
     /* =========================
-       FIX: PROPER CLOSE BEHAVIOR
+       CRITICAL FIX: FORCE CLEAN STATE
     ========================= */
 
     menu.onmouseleave = startHideTimer;
-    subMenu.onmouseleave = startHideTimer;
-
     menu.onmouseenter = cancelHideTimer;
+
     subMenu.onmouseenter = cancelHideTimer;
+
+    subMenu.onmouseleave = () => {
+        startHideTimer();
+    };
 }
 
 loadMenu();
