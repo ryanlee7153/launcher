@@ -1,30 +1,42 @@
-console.log("JS is running");
-const API_URL='https://script.google.com/macros/s/AKfycbyeK2cjWy5DTMBVY-qKjcPbEmitrFreFswnw46hu5Je3HW9axUiyuzcDmiiuJGwA0a69A/exec';
+const API_URL = "https://script.google.com/macros/s/AKfycbyeK2cjWy5DTMBVY-qKjcPbEmitrFreFswnw46hu5Je3HW9axUiyuzcDmiiuJGwA0a69A/exec";
+
+const btn = document.getElementById("launchBtn");
+const menu = document.getElementById("menu");
+
+btn.onclick = () => menu.classList.toggle("open");
+
+window.onclick = e => {
+  if (!document.getElementById("launcher").contains(e.target)) {
+    menu.classList.remove("open");
+  }
+};
+
 async function load() {
   const data = await fetch(API_URL).then(r => r.json());
 
   menu.innerHTML = "";
 
   const groups = {};
-  data.forEach(x => {
-    if (!groups[x.category]) groups[x.category] = [];
-    groups[x.category].push(x);
+
+  data.forEach(item => {
+    if (!groups[item.category]) groups[item.category] = [];
+    groups[item.category].push(item);
   });
 
   Object.keys(groups).sort().forEach(cat => {
-    const c = document.createElement('div');
-    c.className = 'category';
-    c.textContent = cat + ' ▶';
+    const c = document.createElement("div");
+    c.className = "category";
+    c.textContent = cat + " ▶";
 
-    const s = document.createElement('div');
-    s.className = 'submenu';
+    const s = document.createElement("div");
+    s.className = "submenu";
 
     groups[cat]
       .sort((a, b) => a.label.localeCompare(b.label))
       .forEach(i => {
-        const a = document.createElement('a');
+        const a = document.createElement("a");
         a.href = i.url;
-        a.target = '_blank';
+        a.target = "_blank";
         a.textContent = i.label;
         s.appendChild(a);
       });
@@ -33,3 +45,5 @@ async function load() {
     menu.appendChild(c);
   });
 }
+
+load();
