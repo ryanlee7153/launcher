@@ -1,90 +1,81 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbyeK2cjWy5DTMBVY-qKjcPbEmitrFreFswnw46hu5Je3HW9axUiyuzcDmiiuJGwA0a69A/exec";
 
-console.log("SCRIPT LOADED");
+const startButton = document.getElementById("launchBtn");
+const startMenu = document.getElementById("startMenu");
+const subMenu = document.getElementById("subMenu");
 
-const btn = document.getElementById("launchBtn");
-const menu = document.getElementById("menu");
-
-btn.addEventListener("click", (e) => {
-  e.stopPropagation();
-  menu.classList.toggle("open");
+// Toggle Start Menu
+startButton.addEventListener("click", (e) => {
+    e.stopPropagation();
+    startMenu.classList.toggle("open");
+    subMenu.classList.remove("open");
 });
 
+// Close menus when clicking elsewhere
 document.addEventListener("click", () => {
-  menu.classList.remove("open");
-  closePopup();
+    startMenu.classList.remove("open");
+    subMenu.classList.remove("open");
 });
 
-let popup;
+async function buildMenu() {
 
-function closePopup() {
-  if (popup) popup.remove();
-  popup = null;
-}
+    const response = await fetch(API_URL);
+    const data = await response.json();
 
-function openPopup(category, items) {
-  closePopup();
+    const categories = {};
 
-  popup = document.createElement("div");
-  popup.style.position = "fixed";
-  popup.style.left = "300px";
-  popup.style.bottom = "80px";
-  popup.style.width = "250px";
-  popup.style.background = "#2b2b2b";
-  popup.style.border = "1px solid #444";
-  popup.style.padding = "10px";
-  popup.style.color = "white";
+    data.forEach(item => {
 
-  const title = document.createElement("div");
-  title.textContent = category;
-  title.style.fontWeight = "bold";
-  title.style.marginBottom = "10px";
+        if (!item.enabled) return;
 
-  popup.appendChild(title);
+        if (!categories[item.category]) {
+            categories[item.category] = [];
+        }
 
-  items.forEach(i => {
-    const a = document.createElement("a");
-    a.href = i.url;
-    a.target = "_blank";
-    a.textContent = i.label;
-    a.style.display = "block";
-    a.style.color = "#4ea3ff";
-    a.style.textDecoration = "none";
-    a.style.marginBottom = "5px";
-    popup.appendChild(a);
-  });
+        categories[item.category].push(item);
 
-  document.body.appendChild(popup);
-}
-
-async function loadMenu() {
-  const res = await fetch(API_URL);
-  const data = await res.json();
-
-  menu.innerHTML = "";
-
-  const groups = {};
-
-  data.forEach(item => {
-    if (!item.category || !item.label || !item.url) return;
-    if (!item.enabled) return;
-
-    if (!groups[item.category]) groups[item.category] = [];
-    groups[item.category].push(item);
-  });
-
-  Object.keys(groups).sort().forEach(cat => {
-    const c = document.createElement("div");
-    c.className = "category";
-    c.textContent = cat + " ▶";
-
-    c.addEventListener("click", (e) => {
-      e.stopPropagation();
-      openPopup(cat, groups[cat]);
     });
 
-    menu.appendChild(c);
-  });
+    startMenu.innerHTML = "";
+
+    Object.keys(categories)
+        .sort()
+        .forEach(category => {
+
+            const cat = document.createElement("div");
+            cat.className = "category";
+            cat.textContent = category + " ▶";
+
+            cat.addEventListener("mouseenter", () => {
+
+                subMenu.innerHTML = "";
+
+                categories[category]
+                    .sort((a,b)=>a.label.localeCompare(b.label))
+                    .forEach(link=>{
+
+                        const a=document.createElement("a");
+                        a.href=link.url;
+                        a.target="_blank";
+                        a.textContent=link.label;
+
+                        subMenu.appendChild(a);
+
+                    });
+
+                const rect = cat.getBoundingClientRect();
+
+                subMenu.style.left = rect.right + "px";
+                subMenu.style.top = rect.top + "px";
+
+                subMenu.classList.add("open");
+
+            });
+
+            startMenu.appendChild(cat);
+
+        });
+
 }
 
-loadMenu();
+buildMenu();
