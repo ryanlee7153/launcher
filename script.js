@@ -9,24 +9,23 @@ const subMenu = document.getElementById("subMenu");
 let hideTimer = null;
 
 /* =========================
-   OPEN / CLOSE MAIN MENU
+   TOGGLE MAIN MENU
 ========================= */
 
 btn.addEventListener("click", (e) => {
     e.stopPropagation();
-
     menu.classList.toggle("open");
     subMenu.classList.remove("open");
 });
 
-/* Close everything when clicking outside */
+/* Close on outside click */
 document.addEventListener("click", () => {
     menu.classList.remove("open");
     subMenu.classList.remove("open");
 });
 
 /* =========================
-   AUTO-HIDE TIMER (1 sec)
+   AUTO-HIDE (1 second)
 ========================= */
 
 function startHideTimer() {
@@ -50,15 +49,32 @@ function showSubmenu(category, items, x, y) {
 
     subMenu.innerHTML = "";
 
-    items.forEach(i => {
+    items.forEach(item => {
+
         const a = document.createElement("a");
-        a.href = i.url;
-        a.target = "_blank";
-        a.textContent = i.label;
+        a.href = "#"; // prevent instant navigation
+        a.textContent = item.label;
+
+        a.addEventListener("click", (e) => {
+            e.preventDefault();
+
+            // PIN LOGIC
+            if (item.pin && item.pin.trim() !== "") {
+
+                const entered = prompt("Enter PIN:");
+
+                if (entered !== item.pin) {
+                    alert("Incorrect PIN");
+                    return;
+                }
+            }
+
+            window.open(item.url, "_blank");
+        });
+
         subMenu.appendChild(a);
     });
 
-    // FORCE POSITION NEXT TO CATEGORY
     subMenu.style.position = "fixed";
     subMenu.style.left = (x + 10) + "px";
     subMenu.style.top = y + "px";
@@ -67,7 +83,7 @@ function showSubmenu(category, items, x, y) {
 }
 
 /* =========================
-   LOAD MENU FROM APPS SCRIPT
+   LOAD MENU
 ========================= */
 
 async function loadMenu() {
@@ -114,7 +130,7 @@ async function loadMenu() {
     });
 
     /* =========================
-       HIDE BEHAVIOR
+       HOVER BEHAVIOR
     ========================= */
 
     menu.addEventListener("mouseenter", cancelHideTimer);
