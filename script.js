@@ -18,7 +18,6 @@ btn.addEventListener("click", (e) => {
     subMenu.classList.remove("open");
 });
 
-/* close on outside click */
 document.addEventListener("click", () => {
     menu.classList.remove("open");
     subMenu.classList.remove("open");
@@ -41,59 +40,53 @@ function cancelHideTimer() {
 }
 
 /* =========================
-   SUBMENU BUILDER (FIXED)
+   SHOW SUBMENU (HARD RESET LAYOUT)
 ========================= */
 
 function showSubmenu(items, x, y) {
 
+    // FORCE RESET EVERYTHING
     subMenu.innerHTML = "";
 
-    // FORCE COLUMN LAYOUT HERE (not CSS-dependent)
-    subMenu.style.display = "flex";
-    subMenu.style.flexDirection = "column";
     subMenu.style.position = "fixed";
     subMenu.style.left = (x + 10) + "px";
     subMenu.style.top = y + "px";
+    subMenu.style.background = "#1e1e1e";
+    subMenu.style.border = "1px solid #333";
+    subMenu.style.padding = "6px";
+    subMenu.style.display = "flex";
+    subMenu.style.flexDirection = "column";
     subMenu.style.minWidth = "200px";
+    subMenu.style.zIndex = "9999";
 
     items.forEach(item => {
 
         const pin = item.pin ? String(item.pin).trim() : "";
 
-        const div = document.createElement("div");
-        div.textContent = item.label;
+        const row = document.createElement("div");
 
-        div.style.padding = "8px 10px";
-        div.style.cursor = "pointer";
-        div.style.whiteSpace = "nowrap";
-        div.style.color = "white";
+        // HARD INLINE STYLING (removes ALL CSS dependency issues)
+        row.style.padding = "8px 10px";
+        row.style.cursor = "pointer";
+        row.style.color = "white";
+        row.style.whiteSpace = "nowrap";
 
-        div.addEventListener("mouseenter", () => {
-            div.style.background = "#2a2a2a";
-        });
+        row.textContent = item.label;
 
-        div.addEventListener("mouseleave", () => {
-            div.style.background = "transparent";
-        });
+        row.onmouseenter = () => row.style.background = "#2a2a2a";
+        row.onmouseleave = () => row.style.background = "transparent";
 
-        div.addEventListener("click", () => {
-
-            console.log("CLICK:", item.label, "PIN:", pin);
+        row.onclick = () => {
 
             if (pin !== "") {
-
                 const entered = prompt("Enter PIN:");
-
-                if (entered !== pin) {
-                    alert("Incorrect PIN");
-                    return;
-                }
+                if (entered !== pin) return alert("Incorrect PIN");
             }
 
             window.open(item.url, "_blank");
-        });
+        };
 
-        subMenu.appendChild(div);
+        subMenu.appendChild(row);
     });
 
     subMenu.classList.add("open");
@@ -107,8 +100,6 @@ async function loadMenu() {
 
     const res = await fetch(API_URL);
     const data = await res.json();
-
-    console.log("DATA:", data);
 
     const groups = {};
 
@@ -130,24 +121,23 @@ async function loadMenu() {
         div.className = "category";
         div.textContent = cat + " ▶";
 
-        div.addEventListener("mouseenter", () => {
+        div.onmouseenter = (e) => {
 
             cancelHideTimer();
 
             const rect = div.getBoundingClientRect();
 
             showSubmenu(groups[cat], rect.right, rect.top);
-
-        });
+        };
 
         menu.appendChild(div);
     });
 
-    menu.addEventListener("mouseenter", cancelHideTimer);
-    subMenu.addEventListener("mouseenter", cancelHideTimer);
+    menu.onmouseenter = cancelHideTimer;
+    subMenu.onmouseenter = cancelHideTimer;
 
-    menu.addEventListener("mouseleave", startHideTimer);
-    subMenu.addEventListener("mouseleave", startHideTimer);
+    menu.onmouseleave = startHideTimer;
+    subMenu.onmouseleave = startHideTimer;
 }
 
 loadMenu();
