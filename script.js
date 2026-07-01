@@ -1,4 +1,5 @@
 const API_URL='https://script.google.com/macros/s/AKfycbyeK2cjWy5DTMBVY-qKjcPbEmitrFreFswnw46hu5Je3HW9axUiyuzcDmiiuJGwA0a69A/exec';
+console.log("script loaded");
 const btn=document.getElementById('launchBtn');
 const menu=document.getElementById('menu');
 btn.onclick=()=>menu.classList.toggle('open');
