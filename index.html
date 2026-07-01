@@ -1,15 +1,85 @@
 <!DOCTYPE html>
-<html><head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>rrtaylor Launcher</title>
-<link rel="stylesheet" href="style.css">
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Launcher</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #1e1e1e;
+      color: white;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    #launcher {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+    }
+
+    #launchBtn {
+      padding: 10px 15px;
+      background: #0078d7;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    #menu {
+      position: absolute;
+      bottom: 50px;
+      left: 0;
+      width: 250px;
+      background: #2b2b2b;
+      border: 1px solid #444;
+      display: none;
+      padding: 10px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    #menu.open {
+      display: block;
+    }
+
+    .category {
+      margin-top: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 5px;
+      background: #333;
+    }
+
+    .submenu {
+      padding-left: 10px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .submenu a {
+      color: #4ea3ff;
+      text-decoration: none;
+      padding: 3px 0;
+    }
+
+    .submenu a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
+
 <body>
-<div id="launcher" class="launcher">
-<button id="launchBtn">☰</button>
-<div id="menu" class="menu"></div>
+
+<div id="launcher">
+  <button id="launchBtn">Start</button>
+  <div id="menu"></div>
 </div>
-<h1>rrtaylor</h1>
-<script src="script.js"></script>
-</body></html>
+
+<script src="script.js" defer></script>
+
+</body>
+</html>
