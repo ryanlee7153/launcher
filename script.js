@@ -1,81 +1,97 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbyeK2cjWy5DTMBVY-qKjcPbEmitrFreFswnw46hu5Je3HW9axUiyuzcDmiiuJGwA0a69A/exec";
 
-const startButton = document.getElementById("launchBtn");
-const startMenu = document.getElementById("startMenu");
+const btn = document.getElementById("launchBtn");
+const menu = document.getElementById("menu");
 const subMenu = document.getElementById("subMenu");
 
-// Toggle Start Menu
-startButton.addEventListener("click", (e) => {
+let hideTimer = null;
+
+btn.addEventListener("click", (e) => {
     e.stopPropagation();
-    startMenu.classList.toggle("open");
-    subMenu.classList.remove("open");
+    menu.classList.toggle("open");
 });
 
-// Close menus when clicking elsewhere
 document.addEventListener("click", () => {
-    startMenu.classList.remove("open");
+    menu.classList.remove("open");
     subMenu.classList.remove("open");
 });
 
-async function buildMenu() {
+function showSubmenu(category, items, x, y) {
 
-    const response = await fetch(API_URL);
-    const data = await response.json();
+    subMenu.innerHTML = "";
 
-    const categories = {};
-
-    data.forEach(item => {
-
-        if (!item.enabled) return;
-
-        if (!categories[item.category]) {
-            categories[item.category] = [];
-        }
-
-        categories[item.category].push(item);
-
+    items.forEach(i => {
+        const a = document.createElement("a");
+        a.href = i.url;
+        a.target = "_blank";
+        a.textContent = i.label;
+        subMenu.appendChild(a);
     });
 
-    startMenu.innerHTML = "";
+    subMenu.style.left = (x + 220) + "px";
+    subMenu.style.top = y + "px";
 
-    Object.keys(categories)
-        .sort()
-        .forEach(category => {
+    subMenu.classList.add("open");
 
-            const cat = document.createElement("div");
-            cat.className = "category";
-            cat.textContent = category + " ▶";
+    resetHideTimer();
+}
 
-            cat.addEventListener("mouseenter", () => {
+function resetHideTimer() {
+    clearTimeout(hideTimer);
 
-                subMenu.innerHTML = "";
+    hideTimer = setTimeout(() => {
+        menu.classList.remove("open");
+        subMenu.classList.remove("open");
+    }, 1000);
+}
 
-                categories[category]
-                    .sort((a,b)=>a.label.localeCompare(b.label))
-                    .forEach(link=>{
+async function loadMenu() {
 
-                        const a=document.createElement("a");
-                        a.href=link.url;
-                        a.target="_blank";
-                        a.textContent=link.label;
+    const res = await fetch(API_URL);
+    const data = await res.json();
 
-                        subMenu.appendChild(a);
+    const groups = {};
 
-                    });
+    data.forEach(item => {
+        if (!item.enabled) return;
 
-                const rect = cat.getBoundingClientRect();
+        if (!groups[item.category]) {
+            groups[item.category] = [];
+        }
 
-                subMenu.style.left = rect.right + "px";
-                subMenu.style.top = rect.top + "px";
+        groups[item.category].push(item);
+    });
 
-                subMenu.classList.add("open");
+    menu.innerHTML = "";
 
-            });
+    Object.keys(groups).sort().forEach(cat => {
 
-            startMenu.appendChild(cat);
+        const div = document.createElement("div");
+        div.className = "category";
+        div.textContent = cat + " ▶";
+
+        div.addEventListener("mouseenter", (e) => {
+
+            const rect = div.getBoundingClientRect();
+
+            showSubmenu(
+                cat,
+                groups[cat],
+                rect.right,
+                rect.top
+            );
 
         });
 
+        menu.appendChild(div);
+    });
+
+    // keep menu alive while interacting
+    menu.addEventListener("mouseenter", () => clearTimeout(hideTimer));
+    subMenu.addEventListener("mouseenter", () => clearTimeout(hideTimer));
+
+    menu.addEventListener("mouseleave", resetHideTimer);
+    subMenu.addEventListener("mouseleave", resetHideTimer);
 }
 
-buildMenu();
+loadMenu();
