@@ -9,7 +9,7 @@ const subMenu = document.getElementById("subMenu");
 let hideTimer = null;
 
 /* =========================
-   TOGGLE MAIN MENU
+   MENU TOGGLE
 ========================= */
 
 btn.addEventListener("click", (e) => {
@@ -18,19 +18,17 @@ btn.addEventListener("click", (e) => {
     subMenu.classList.remove("open");
 });
 
-/* Close on outside click */
 document.addEventListener("click", () => {
     menu.classList.remove("open");
     subMenu.classList.remove("open");
 });
 
 /* =========================
-   AUTO-HIDE (1 second)
+   AUTO HIDE
 ========================= */
 
 function startHideTimer() {
     clearTimeout(hideTimer);
-
     hideTimer = setTimeout(() => {
         menu.classList.remove("open");
         subMenu.classList.remove("open");
@@ -42,7 +40,7 @@ function cancelHideTimer() {
 }
 
 /* =========================
-   SUBMENU RENDER
+   SUBMENU
 ========================= */
 
 function showSubmenu(category, items, x, y) {
@@ -51,25 +49,33 @@ function showSubmenu(category, items, x, y) {
 
     items.forEach(item => {
 
+        console.log("ITEM:", item); // DEBUG: check PIN exists
+
         const a = document.createElement("a");
-        a.href = "#"; // prevent instant navigation
+        a.href = "#";
         a.textContent = item.label;
 
         a.addEventListener("click", (e) => {
             e.preventDefault();
 
-            // PIN LOGIC
-            if (item.pin && item.pin.trim() !== "") {
+            const pinValue = (item.pin || "").toString().trim();
 
-                const entered = prompt("Enter PIN:");
+            console.log("CLICKED ITEM PIN:", pinValue);
 
-                if (entered !== item.pin) {
-                    alert("Incorrect PIN");
-                    return;
-                }
+            // NO PIN REQUIRED
+            if (!pinValue) {
+                window.open(item.url, "_blank");
+                return;
             }
 
-            window.open(item.url, "_blank");
+            // PIN REQUIRED
+            const entered = prompt("Enter PIN:");
+
+            if (entered === pinValue) {
+                window.open(item.url, "_blank");
+            } else {
+                alert("Incorrect PIN");
+            }
         });
 
         subMenu.appendChild(a);
@@ -90,6 +96,8 @@ async function loadMenu() {
 
     const res = await fetch(API_URL);
     const data = await res.json();
+
+    console.log("DATA:", data); // DEBUG
 
     const groups = {};
 
@@ -117,21 +125,12 @@ async function loadMenu() {
 
             const rect = div.getBoundingClientRect();
 
-            showSubmenu(
-                cat,
-                groups[cat],
-                rect.right,
-                rect.top
-            );
+            showSubmenu(cat, groups[cat], rect.right, rect.top);
 
         });
 
         menu.appendChild(div);
     });
-
-    /* =========================
-       HOVER BEHAVIOR
-    ========================= */
 
     menu.addEventListener("mouseenter", cancelHideTimer);
     subMenu.addEventListener("mouseenter", cancelHideTimer);
