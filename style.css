@@ -1,6 +1,10 @@
-/* ===== Desktop ===== */
+/* =========================
+   Ryan Launcher
+   style.css
+========================= */
 
-html, body {
+html,
+body {
     margin: 0;
     padding: 0;
     width: 100%;
@@ -10,64 +14,58 @@ html, body {
     background: #1b1b1b;
 }
 
+/* Desktop */
+
 #desktop {
     position: absolute;
     inset: 0;
-    background: linear-gradient(#2b2b2b, #1b1b1b);
+    background: linear-gradient(#2d2d2d, #1b1b1b);
 }
 
-
-/* ===== Taskbar ===== */
+/* Launcher Button */
 
 #taskbar {
     position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    height: 42px;
-
-    background: #1d1d1d;
-
-    border-top: 1px solid #444;
-
-    display: flex;
-    align-items: center;
+    top: 15px;
+    left: 15px;
+    z-index: 1000;
 }
 
-
-/* ===== Start Button ===== */
-
 #launchBtn {
-    height: 100%;
-    width: 95px;
+
+    width: 56px;
+    height: 56px;
 
     border: none;
+    border-radius: 50%;
 
-    background: #0a64c9;
-    color: white;
+    background: white;
+    color: #222;
 
-    font-size: 16px;
+    font-size: 18px;
     font-weight: bold;
 
     cursor: pointer;
+
+    box-shadow: 0 5px 15px rgba(0,0,0,.35);
+
+    transition: .20s;
 }
 
 #launchBtn:hover {
-    background: #1476e0;
+    transform: scale(1.08);
 }
 
-
-/* ===== Start Menu ===== */
+/* Main Menu */
 
 .menu {
 
     position: fixed;
 
-    bottom: 42px;
-    left: 0;
+    top: 80px;
+    left: 15px;
 
-    width: 250px;
+    width: 240px;
 
     background: #2d2d30;
 
@@ -75,7 +73,9 @@ html, body {
 
     display: none;
 
-    box-shadow: 0 0 15px rgba(0,0,0,.5);
+    box-shadow: 0 8px 20px rgba(0,0,0,.45);
+
+    overflow: hidden;
 
 }
 
@@ -83,17 +83,24 @@ html, body {
     display: block;
 }
 
-
-/* ===== Categories ===== */
+/* Categories */
 
 .category {
 
-    padding: 10px;
+    padding: 12px 15px;
 
     cursor: pointer;
 
+    color: white;
+
+    border-bottom: 1px solid #3b3b3b;
+
     user-select: none;
 
+}
+
+.category:last-child{
+    border-bottom:none;
 }
 
 .category:hover {
@@ -102,8 +109,7 @@ html, body {
 
 }
 
-
-/* ===== Popup Menu ===== */
+/* Popup Menu */
 
 .submenu {
 
@@ -111,13 +117,15 @@ html, body {
 
     display: none;
 
-    width: 250px;
+    width: 240px;
 
     background: #2d2d30;
 
     border: 1px solid #555;
 
-    box-shadow: 0 0 15px rgba(0,0,0,.5);
+    box-shadow: 0 8px 20px rgba(0,0,0,.45);
+
+    overflow: hidden;
 
 }
 
@@ -125,19 +133,24 @@ html, body {
     display: block;
 }
 
-
-/* ===== Links ===== */
+/* Links */
 
 .submenu a {
 
     display: block;
 
+    padding: 12px 15px;
+
     color: white;
 
     text-decoration: none;
 
-    padding: 10px;
+    border-bottom: 1px solid #3b3b3b;
 
+}
+
+.submenu a:last-child{
+    border-bottom:none;
 }
 
 .submenu a:hover {
