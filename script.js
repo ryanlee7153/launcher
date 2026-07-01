@@ -1,4 +1,4 @@
-const API_URL='PASTE_YOUR_APPS_SCRIPT_EXEC_URL_HERE';
+const API_URL='https://script.google.com/macros/s/AKfycbyeK2cjWy5DTMBVY-qKjcPbEmitrFreFswnw46hu5Je3HW9axUiyuzcDmiiuJGwA0a69A/exec';
 const btn=document.getElementById('launchBtn');
 const menu=document.getElementById('menu');
 btn.onclick=()=>menu.classList.toggle('open');
