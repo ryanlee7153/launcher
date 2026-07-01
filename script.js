@@ -8,10 +8,7 @@ const subMenu = document.getElementById("subMenu");
 
 let hideTimer = null;
 
-/* =========================
-   MENU TOGGLE
-========================= */
-
+/* OPEN/CLOSE MENU */
 btn.addEventListener("click", (e) => {
     e.stopPropagation();
     menu.classList.toggle("open");
@@ -23,10 +20,7 @@ document.addEventListener("click", () => {
     subMenu.classList.remove("open");
 });
 
-/* =========================
-   AUTO HIDE
-========================= */
-
+/* AUTO HIDE */
 function startHideTimer() {
     clearTimeout(hideTimer);
     hideTimer = setTimeout(() => {
@@ -39,46 +33,38 @@ function cancelHideTimer() {
     clearTimeout(hideTimer);
 }
 
-/* =========================
-   SUBMENU
-========================= */
-
+/* SUBMENU */
 function showSubmenu(category, items, x, y) {
 
     subMenu.innerHTML = "";
 
     items.forEach(item => {
 
-        console.log("ITEM:", item); // DEBUG: check PIN exists
+        const pin = item.pin ? String(item.pin).trim() : "";
 
-        const a = document.createElement("a");
-        a.href = "#";
-        a.textContent = item.label;
+        const link = document.createElement("div");
+        link.className = "menu-item";
+        link.textContent = item.label;
 
-        a.addEventListener("click", (e) => {
-            e.preventDefault();
+        link.addEventListener("click", () => {
 
-            const pinValue = (item.pin || "").toString().trim();
+            // DEBUG
+            console.log("CLICK:", item.label, "PIN:", pin);
 
-            console.log("CLICKED ITEM PIN:", pinValue);
+            if (pin !== "") {
 
-            // NO PIN REQUIRED
-            if (!pinValue) {
-                window.open(item.url, "_blank");
-                return;
+                const entered = prompt("Enter PIN:");
+
+                if (entered !== pin) {
+                    alert("Incorrect PIN");
+                    return;
+                }
             }
 
-            // PIN REQUIRED
-            const entered = prompt("Enter PIN:");
-
-            if (entered === pinValue) {
-                window.open(item.url, "_blank");
-            } else {
-                alert("Incorrect PIN");
-            }
+            window.open(item.url, "_blank");
         });
 
-        subMenu.appendChild(a);
+        subMenu.appendChild(link);
     });
 
     subMenu.style.position = "fixed";
@@ -88,16 +74,11 @@ function showSubmenu(category, items, x, y) {
     subMenu.classList.add("open");
 }
 
-/* =========================
-   LOAD MENU
-========================= */
-
+/* LOAD MENU */
 async function loadMenu() {
 
     const res = await fetch(API_URL);
     const data = await res.json();
-
-    console.log("DATA:", data); // DEBUG
 
     const groups = {};
 
