@@ -41,20 +41,10 @@ body {
     flex-direction: column;
     min-width: 180px;
     z-index: 1000;
-
-    /* === ANIMATION ADD === */
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.18s ease, transform 0.18s ease;
-    pointer-events: none;
 }
 
-/* OPEN STATE */
 #startMenu.open {
     display: flex;
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
 }
 
 /* CATEGORY ITEMS */
@@ -69,7 +59,7 @@ body {
 }
 
 /* =========================
-   SUB MENU
+   SUB MENU (IMPORTANT FIX)
 ========================= */
 
 #subMenu {
@@ -81,20 +71,11 @@ body {
     padding: 8px;
     min-width: 200px;
     z-index: 2000;
-
-    /* === ANIMATION ADD === */
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.18s ease, transform 0.18s ease;
-    pointer-events: none;
 }
 
-/* OPEN STATE */
+/* SHOW STATE */
 #subMenu.open {
     display: flex;
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
 }
 
 /* LINKS INSIDE SUBMENU */
