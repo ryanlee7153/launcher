@@ -34,8 +34,6 @@ function showSubmenu(items, x, y) {
 
     items.forEach(item => {
 
-        const pin = item.pin ? String(item.pin).trim() : "";
-
         const row = document.createElement("div");
         row.textContent = item.label;
 
@@ -48,12 +46,6 @@ function showSubmenu(items, x, y) {
         row.onmouseleave = () => row.style.background = "transparent";
 
         row.onclick = () => {
-
-            if (pin !== "") {
-                const entered = prompt("Enter PIN:");
-                if (entered !== pin) return alert("Incorrect PIN");
-            }
-
             window.open(item.url, "_blank");
         };
 
@@ -67,7 +59,7 @@ function showSubmenu(items, x, y) {
 
 function closeAll() {
     menu.classList.remove("open");
-    hideSubmenu(); // <- THIS is the real fix
+    hideSubmenu();
 }
 
 /* =========================
